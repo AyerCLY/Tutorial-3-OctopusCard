@@ -1,39 +1,51 @@
-function OctopusCard (){
+function OctopusCard () {
   this.balance = 0;
-  this.AAVSamount = 0;
+  this.aavs_amount = 0;
 
-  this.setAAVS = function (_AAVSamount) {
-    if (_AAVSamount < 250 || _AAVSamount%50 != 0 ) return false;
-    this.AAVSamount = _AAVSamount;
-    this.balance += _AAVSamount;
-  } 
-
-  this.topUp = function (_topup) {
-    if (_topup < 50 || _topup%50 != 0) return false;
-    this.balance += _topup;
+  // returns boolean
+  // ture: success to set AAVS
+  // false: fail to set AAVS
+  this.setAAVS = function (_aavs_amount) {
+    if (_aavs_amount != 250 || _aavs_amount != 500) return false;
+    this.aavs_amount = _aavs_amount;
+    return true;
   }
 
-  this.pay = function (_fee) {
-    if (_fee < 0 || _fee > this.balance) return false;
-    this.balance -= _fee;
-    if (this.balance == 0 ) return (this.balance += this.AAVSamount);
+  // returns boolean
+  // ture: success to topup
+  // false: fail to topup
+  this.topup = function (_amount) {
+    if (_amount < 0 || _amount % 50 != 0) return false;
+    this.balance += _amount;
+    return true;
   }
 
+  // returns boolean
+  // ture: success to pay
+  // false: fail to pay
+  this.pay = function (_amount) {
+    if (_amount < 0 || _amount > 3000) return false;
+
+    if (_amount > this.balance) {
+      if (this.aavs_amount == 0){
+        return false;
+      } else {
+        this.topup(this.aavs_amount);
+      }
+    }
+
+    if (_amount > this.balance) return false;
+
+    this.balance -= _amount;
+    return true;
+  }
 }
 
 var card = new OctopusCard();
-console.log (card);
-card.setAAVS(500);
-console.log (card);
-card.topUp(500);
-console.log (card);
-card.pay(2.5);
-console.log (card);
-card.pay(747.5);
-console.log (card);
-card.pay(225);
-console.log (card)
-card.pay(25);
-console.log (card)
-card.pay(500);
-console.log (card)
+if (card.setAAVS(250)) {
+  console.log('success');
+} else {
+  console.log('fail');
+}
+// card.topup(500);
+// card.pay(500);
